@@ -4,21 +4,24 @@ if(!empty($_POST["id_inmueble"])){
 require 'dbConfig.php';
 
 $lastID    = $_POST['id_inmueble'];
-$showLimit = 50;  //Límite en la visualización de datos
+$showLimit = 10;  //Límite en la visualización de datos
+
+//Consultando la Cantidad de Registros
+$queryAll = ("SELECT COUNT(*) as num_rows FROM inmuebles WHERE id_inmueble < ".$lastID." ORDER BY id_inmueble DESC");
+$rowAll = mysqli_query($con, $queryAll);
+$DataAll  = mysqli_fetch_array($rowAll);
+$allNumRows = $DataAll['num_rows'];
 
 
-$queryAll   = $db->query("SELECT COUNT(*) as num_rows FROM inmuebles WHERE id_inmueble < ".$lastID." ORDER BY id_inmueble DESC");
-$rowAll     = $queryAll->fetch_assoc();
-$allNumRows = $rowAll['num_rows'];
+//Consultando los Registro deacuerdo al limite de Id
+$queryRegist = ("SELECT * FROM inmuebles WHERE id_inmueble < ".$lastID." ORDER BY id_inmueble DESC LIMIT ".$showLimit);
+$SqlRegist   = mysqli_query($con, $queryRegist);
+$totalRegist = mysqli_num_rows($SqlRegist);
 
-$query      = $db->query("SELECT * FROM inmuebles WHERE id_inmueble < ".$lastID." ORDER BY id_inmueble DESC LIMIT ".$showLimit);
-
-if($query->num_rows > 0){
-$a =1;    
-while($row = $query->fetch_assoc()){ 
+if($totalRegist> 0){
+while($row = mysqli_fetch_array($SqlRegist)){
     $postID = $row["id_inmueble"]; ?>
 <div class="list-item" style="border: 1px solid red;">
-    <span><?php echo $a++; ?><br>
     <h4>
         <?php echo $row['tipo_inmueble']; ?>
     </h4>
@@ -30,7 +33,7 @@ while($row = $query->fetch_assoc()){
     </div>
 <?php }else{ ?>
     <div class="load-more" lastID="0" style="border: 1px solid crimson;">
-        That's Allx..!
+        Ya no hay más Registros...
     </div>
 <?php }
 }else{ ?>

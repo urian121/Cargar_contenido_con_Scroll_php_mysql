@@ -56,14 +56,16 @@ $(document).ready(function(){
 <div id="postList">
 <?php
 require 'dbConfig.php';
-$query = $db->query("SELECT * FROM inmuebles  ORDER BY id_inmueble DESC LIMIT 30");
-$a =1;
-if($query->num_rows > 0){
-    while($row = $query->fetch_assoc()){
+
+$sqlClientes = ("SELECT * FROM inmuebles  ORDER BY id_inmueble DESC LIMIT 10");
+$mostarInmuebles = mysqli_query($con, $sqlClientes);
+$totalClientes = mysqli_num_rows($mostarInmuebles);
+
+if($totalClientes > 0){
+    while($row = mysqli_fetch_array($mostarInmuebles)){
         $postID = $row["id_inmueble"];
 ?>
     <div class="list-item">
-      <span><?php echo $a++; ?><br>
       <?php echo $row["codigo"]; ?></span>
       <h4><?php echo $row['tipo_inmueble']; ?></h4>
     </div>
